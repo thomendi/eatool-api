@@ -58,4 +58,5 @@ class AuthTokenSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
-class ArtefactsSerializer(serializers)
+class ArtefactsSerializer(serializers.ModelSerializer):
+    """  Artefacts model for metadata of the objects."""
