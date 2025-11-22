@@ -17,10 +17,23 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
+from django.http import HttpResponse
 from django.contrib import admin
 from django.urls import path, include
 
+def test(request):
+    return HttpResponse("OK")
+
+def cors_ok(request):
+    response = HttpResponse()
+    response["Access-Control-Allow-Origin"] = "http://localhost:5173"
+    response["Access-Control-Allow-Credentials"] = "true"
+    response["Access-Control-Allow-Headers"] = "authorization, content-type"
+    response["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    return response
+
 urlpatterns = [
+    path("cors-test/", cors_ok),
     path('admin/', admin.site.urls),
     path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
     path(
@@ -30,4 +43,6 @@ urlpatterns = [
     ),
     path('api/user/', include('user.urls')),
     path('api/artefacts/', include('artefacts.urls')),
+    path('api/diagrams/', include('diagrams.urls') ),
+    path("test/", test),
 ]

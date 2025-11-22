@@ -12,10 +12,12 @@ from artefacts import views
 
 
 router =  DefaultRouter()
-router.register('artefacts', views.ArtefactsViewSet)
+router.register('artefact', views.ArtefactsViewSet)
 
 app_name = 'artefacts'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('list/', views.ArtefactsViewSet.get_artefacts_list, name='get_artefacts_list'),
+
 ]

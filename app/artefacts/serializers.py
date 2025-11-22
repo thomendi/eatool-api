@@ -11,4 +11,14 @@ class ArtefactsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artefacts
-        fields = ['id', 'name', 'description', 'type', 'level', 'subtype', 'alias', 'category', 'subcategory', 'version', 'company', 'owner',  'state', 'objetive', 'range']
+        fields = [
+            'id', 'name', 'description', 'type', 'level', 'subtype',
+            'alias', 'category', 'subcategory', 'version', 'company',
+            'owner',  'state', 'objetive', 'range'
+            ]
+
+class ArtefactsDetailSerializer(ArtefactsSerializer):
+        """Serializer for artefacts detail view."""
+
+        class Meta(ArtefactsSerializer.Meta):
+            fields = ArtefactsSerializer.Meta.fields + ['description']
