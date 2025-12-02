@@ -41,14 +41,15 @@ class DiagramsViewSet(viewsets.ModelViewSet):
         """Retrive diagrams by artefacts."""
         try:
             diagrams = Diagrams.objects.get(idart=idart)
-            data={
+            data=[
+            {
                 "id": diagrams.id,
                 "idart": diagrams.idart,
                 "name": diagrams.name,
                 "description": diagrams.description,
                 "version": diagrams.version,
                 "diagram":diagrams.diagram
-            }
+            }]
 
             return Response(data, status=status.HTTP_200_OK)
         except Diagrams.DoesNotExist:
