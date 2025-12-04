@@ -77,6 +77,8 @@ class Diagrams(models.Model):
         )
     idart = models.CharField(max_length=20)
     name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    version = models.CharField(max_length=10, blank=True)
     diagram = models.TextField()
 
     def __str__(self):
