@@ -147,6 +147,7 @@ INSTALLED_APPS = [
     'diagrams',
     'applications',
     'roles',
+    'task_links',
 
     # CORS
     'corsheaders',

@@ -22,3 +22,11 @@ class ArtefactsDetailSerializer(ArtefactsSerializer):
 
         class Meta(ArtefactsSerializer.Meta):
             fields = ArtefactsSerializer.Meta.fields + ['description']
+
+
+class LinkedTaskArtefactRequestSerializer(ArtefactsSerializer):
+    """Serializer for request body of create_linked_task_artefact."""
+    idart = serializers.CharField(required=True, help_text="ID of the source artefact")
+
+    class Meta(ArtefactsSerializer.Meta):
+        fields = ArtefactsSerializer.Meta.fields + ['idart']
