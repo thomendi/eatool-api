@@ -83,3 +83,20 @@ class Diagrams(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class TaskLink(models.Model):
+    """Model for linking artefacts."""
+    source_artefact = models.ForeignKey(
+        Artefacts,
+        on_delete=models.CASCADE,
+        related_name='source_links'
+    )
+    target_artefact = models.ForeignKey(
+        Artefacts,
+        on_delete=models.CASCADE,
+        related_name='target_links'
+    )
+
+    def __str__(self):
+        return f"{self.source_artefact} -> {self.target_artefact}"

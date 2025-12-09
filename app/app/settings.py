@@ -145,6 +145,7 @@ INSTALLED_APPS = [
     'user',
     'artefacts',
     'diagrams',
+    'task_links',
 
     # CORS
     'corsheaders',
