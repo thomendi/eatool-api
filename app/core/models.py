@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.contrib.postgres.fields import ArrayField
 
 
 class UserManager(BaseUserManager):
@@ -85,6 +86,31 @@ class Diagrams(models.Model):
         return self.name
 
 
+class Applications(models.Model):
+    name = models.CharField(max_length=255)
+    version = models.CharField(max_length=50, blank=True)
+    developer = models.CharField(max_length=255, blank=True)
+    activeUsers = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, default="active")
+    description = models.TextField(blank=True, default="")
+    lastUpdated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+    
+
+class Roles(models.Model):
+    # id autogenerado
+    owners = ArrayField(models.CharField(max_length=255), default=list, blank=True)
+    category = models.CharField(max_length=255)
+    subcategory = models.CharField(max_length=255, blank=True)
+    duties = ArrayField(models.CharField(max_length=1024), default=list, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    lastUpdated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.category} / {self.subcategory}"
 class TaskLink(models.Model):
     """Model for linking artefacts."""
     source_artefact = models.ForeignKey(
