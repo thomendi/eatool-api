@@ -113,3 +113,31 @@ def get_artefact_by_name(request, name):
         return Response(serializer.data)
     except Artefacts.DoesNotExist:
         return Response({'error': 'Artefact not found'}, status=404)
+
+
+@extend_schema(responses=serializers.ArtefactsSerializer(many=True))
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_artefacts_by_subtype(request, subtype):
+    """Retrieve artefacts by their subtype."""
+    artefacts = Artefacts.objects.filter(subtype=subtype)
+    serializer = serializers.ArtefactsSerializer(artefacts, many=True)
+    return Response({
+        "count": artefacts.count(),
+        "artefacts": serializer.data
+    })
+
+
+@extend_schema(responses=serializers.ArtefactsSerializer(many=True))
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_linked_artefacts(request, idart):
+    """Retrieve artefacts linked as targets to a source artefact."""
+    artefacts = Artefacts.objects.filter(target_links__source_artefact__id=idart)
+    serializer = serializers.ArtefactsSerializer(artefacts, many=True)
+    return Response({
+        "count": artefacts.count(),
+        "artefacts": serializer.data
+    })
