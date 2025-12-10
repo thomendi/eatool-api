@@ -12,6 +12,12 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'activeUsers',
             'status',
             'description',
+            'os',
+            'language',
+            'framework',
+            'security',
+            'type',
+            'priority',
             'lastUpdated',
         ]
 

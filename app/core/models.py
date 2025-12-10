@@ -93,11 +93,17 @@ class Applications(models.Model):
     activeUsers = models.IntegerField(default=0)
     status = models.CharField(max_length=20, default="active")
     description = models.TextField(blank=True, default="")
+    os = models.CharField(max_length=255, blank=True)
+    language = models.CharField(max_length=255, blank=True)
+    framework = models.CharField(max_length=255, blank=True)
+    security = models.CharField(max_length=255, blank=True)
+    type = models.CharField(max_length=255, blank=True)
+    priority = models.CharField(max_length=50, blank=True)
     lastUpdated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
-    
+
 
 class Roles(models.Model):
     # id autogenerado
@@ -126,3 +132,13 @@ class TaskLink(models.Model):
 
     def __str__(self):
         return f"{self.source_artefact} -> {self.target_artefact}"
+
+
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
+
+@receiver(post_delete, sender=Artefacts)
+def delete_related_diagrams(sender, instance, **kwargs):
+    """Delete diagrams related to the deleted artefact."""
+    Diagrams.objects.filter(idart=instance.id).delete()
