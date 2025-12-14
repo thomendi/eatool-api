@@ -147,6 +147,7 @@ INSTALLED_APPS = [
     'diagrams',
     'applications',
     'roles',
+    'risks.apps.RisksConfig',
     'task_links',
 
     # CORS
