@@ -70,13 +70,18 @@ def create_linked_task_artefact(request):
 
         # Generate ID: TAS-XXXX
         random_id = random.randint(1000, 9999)
-        new_id = f"TAS-{random_id}"
+        if request.data['subtype'] == 'Proceso':
+            new_id = f"PR-{random_id}"
+        else:
+            new_id = f"TAS-{random_id}"
 
         # Create Artefact
         artefact_data = request.data.copy()
         artefact_data['id'] = new_id
         artefact_data['type'] = 'BPMN'
-        artefact_data['subtype'] = 'Tarea'
+
+        # TODO: Add subtype comment by Tomas M. 2026-01-01
+        # artefact_data['subtype'] = 'Tarea'
 
         # Remove idart from artefact data if present, as it's not a field of Artefact
         if 'idart' in artefact_data:
