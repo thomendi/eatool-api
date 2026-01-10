@@ -40,6 +40,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    ROLE_CHOICES = (
+        ('administrador', 'Administrador'),
+        ('arquitecto', 'Arquitecto'),
+        ('colaborador', 'Colaborador'),
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='colaborador')
 
     objects = UserManager()
 
