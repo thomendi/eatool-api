@@ -19,6 +19,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
             'type',
             'priority',
             'lastUpdated',
+            'company',
         ]
 
 class ApplicationDetailSerializer(ApplicationSerializer):

@@ -11,5 +11,5 @@ class TaskLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskLink
-        fields = ['id', 'source_artefact', 'target_artefact']
+        fields = ['id', 'source_artefact', 'target_artefact', 'company']
         read_only_fields = ['id']

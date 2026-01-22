@@ -40,6 +40,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    ROLE_CHOICES = (
+        ('administrador', 'Administrador'),
+        ('arquitecto', 'Arquitecto'),
+        ('colaborador', 'Colaborador'),
+    )
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='colaborador')
+    company = models.CharField(max_length=255, blank=True, null=True)
 
     objects = UserManager()
 
@@ -80,6 +87,7 @@ class Diagrams(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     version = models.CharField(max_length=10, blank=True)
+    company = models.CharField(max_length=255, blank=True, null=True)
     diagram = models.TextField()
 
     def __str__(self):
@@ -99,6 +107,7 @@ class Applications(models.Model):
     security = models.CharField(max_length=255, blank=True)
     type = models.CharField(max_length=255, blank=True)
     priority = models.CharField(max_length=50, blank=True)
+    company = models.CharField(max_length=255, blank=True, null=True)
     lastUpdated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -113,6 +122,7 @@ class Roles(models.Model):
     duties = ArrayField(models.CharField(max_length=1024), default=list, blank=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    company = models.CharField(max_length=255, blank=True, null=True)
     lastUpdated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -129,6 +139,7 @@ class TaskLink(models.Model):
         on_delete=models.CASCADE,
         related_name='target_links'
     )
+    company = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"{self.source_artefact} -> {self.target_artefact}"
@@ -142,3 +153,15 @@ from django.dispatch import receiver
 def delete_related_diagrams(sender, instance, **kwargs):
     """Delete diagrams related to the deleted artefact."""
     Diagrams.objects.filter(idart=instance.id).delete()
+
+
+class Company(models.Model):
+    """Company model to store company details."""
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    contact = models.CharField(max_length=255)
+    telephone = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
+
+    def __str__(self):
+        return self.name

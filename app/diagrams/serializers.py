@@ -11,7 +11,7 @@ class DiagramsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Diagrams
-        fields = ['id', 'idart', 'name', 'description', 'version', 'diagram']
+        fields = ['id', 'idart', 'name', 'description', 'version', 'diagram', 'company']
         read_only_fields = ['id']
 
 class DiagramsDetailSerializer(DiagramsSerializer):
