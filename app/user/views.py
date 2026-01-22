@@ -48,9 +48,32 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
+from drf_spectacular.utils import extend_schema
+from core.params import COMPANY_PARAMETER
+
+@extend_schema(parameters=[COMPANY_PARAMETER])
 class ListUserView(generics.ListAPIView):
     """List all users in the system."""
     serializer_class = UserSerializer
     queryset = get_user_model().objects.all()
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """Return objects for the current authenticated user only."""
+        queryset = self.queryset
+        company = self.request.query_params.get('company')
+        if company:
+            queryset = queryset.filter(company=company)
+        return queryset
+
+
+class UserProfileView(generics.RetrieveAPIView):
+    """Retrieve the authenticated user's profile."""
+    serializer_class = UserSerializer
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        """Retrieve and return the authenticated user."""
+        return self.request.user

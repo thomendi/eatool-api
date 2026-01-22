@@ -69,9 +69,11 @@ class PrivateArtefactsApiTests(TestCase):
         res = self.client.get(url)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['subtype'], subtype)
-        self.assertEqual(res.data[0]['name'], 'Artefact 1')
+        # API returns { "count": N, "artefacts": [...] }
+        self.assertEqual(res.data['count'], 1)
+        self.assertEqual(len(res.data['artefacts']), 1)
+        self.assertEqual(res.data['artefacts'][0]['subtype'], subtype)
+        self.assertEqual(res.data['artefacts'][0]['name'], 'Artefact 1')
 
     def test_retrieve_artefacts_by_nonexistent_subtype(self):
         """Test retrieving artefacts by a subtype that doesn't exist."""
@@ -79,4 +81,5 @@ class PrivateArtefactsApiTests(TestCase):
         res = self.client.get(url)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 0)
+        self.assertEqual(res.data['count'], 0)
+        self.assertEqual(len(res.data['artefacts']), 0)

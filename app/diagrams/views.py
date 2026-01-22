@@ -10,11 +10,18 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.forms.models import model_to_dict
 
+from drf_spectacular.utils import extend_schema, extend_schema_view
+
+from core.mixins import CompanyFilterMixin
+from core.params import COMPANY_PARAMETER
 from core.models import Diagrams
 from diagrams import serializers
 
 
-class DiagramsViewSet(viewsets.ModelViewSet):
+@extend_schema_view(
+    list=extend_schema(parameters=[COMPANY_PARAMETER]),
+)
+class DiagramsViewSet(CompanyFilterMixin, viewsets.ModelViewSet):
     """View for manage diagrams APIs."""
     serializer_class = serializers.DiagramsDetailSerializer
     queryset = Diagrams.objects.all()
@@ -23,7 +30,7 @@ class DiagramsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Retrieve diagrams."""
-        return self.queryset.order_by('id')
+        return super().get_queryset().order_by('id')
 
     def get_serializer_class(self):
         """Return the serializer class for request."""
@@ -36,11 +43,21 @@ class DiagramsViewSet(viewsets.ModelViewSet):
         """Create a new diagrams."""
         serializer.save()
 
+    @extend_schema(parameters=[COMPANY_PARAMETER])
     @api_view(['GET'])
-    def query_diagrams_by_artefact(self, idart):
+    def query_diagrams_by_artefact(request, idart):
         """Retrive diagrams by artefacts."""
         try:
-            diagrams = Diagrams.objects.get(idart=idart)
+            diagrams = Diagrams.objects.filter(idart=idart)
+
+            company = request.query_params.get('company')
+            if company:
+                diagrams = diagrams.filter(company=company)
+
+            diagrams = diagrams.first()
+            if not diagrams:
+                raise Diagrams.DoesNotExist
+
             data=[
             {
                 "id": diagrams.id,

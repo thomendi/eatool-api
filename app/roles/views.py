@@ -3,12 +3,18 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny
+from drf_spectacular.utils import extend_schema, extend_schema_view
 
+from core.mixins import CompanyFilterMixin
+from core.params import COMPANY_PARAMETER
 from core.permissions import IsAuthenticatedOrOptions  # si ya lo usas
 from core.models import Roles
 from roles import serializers
 
-class RolesViewSet(viewsets.ModelViewSet):
+@extend_schema_view(
+    list=extend_schema(parameters=[COMPANY_PARAMETER]),
+)
+class RolesViewSet(CompanyFilterMixin, viewsets.ModelViewSet):
     serializer_class = serializers.RoleDetailSerializer
     queryset = Roles.objects.all()
     authentication_classes = [TokenAuthentication]
@@ -16,7 +22,7 @@ class RolesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrOptions]
 
     def get_queryset(self):
-        return self.queryset.order_by('id')
+        return super().get_queryset().order_by('id')
 
     def get_serializer_class(self):
         if self.action == 'list':

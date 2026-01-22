@@ -14,6 +14,7 @@ class RoleSerializer(serializers.ModelSerializer):
             'description',
             'created_at',
             'lastUpdated',
+            'company',
         ]
 
 class RoleDetailSerializer(RoleSerializer):

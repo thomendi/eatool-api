@@ -7,12 +7,20 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
+from drf_spectacular.utils import extend_schema, extend_schema_view
+
+from core.mixins import CompanyFilterMixin
+from core.params import COMPANY_PARAMETER
 from core.permissions import IsAuthenticatedOrOptions
 from core.models import Artefacts
 from artefacts import serializers
 
 
-class ArtefactsViewSet(viewsets.ModelViewSet):
+
+@extend_schema_view(
+    list=extend_schema(parameters=[COMPANY_PARAMETER]),
+)
+class ArtefactsViewSet(CompanyFilterMixin, viewsets.ModelViewSet):
     """View for manage artefacts APIs."""
     serializer_class = serializers.ArtefactsDetailSerializer
     queryset = Artefacts.objects.all()
@@ -21,7 +29,7 @@ class ArtefactsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Retrieve artefacts."""
-        return self.queryset.order_by('id')
+        return super().get_queryset().order_by('id')
 
     def get_serializer_class(self):
         """Return the serializer class for request."""
@@ -34,11 +42,15 @@ class ArtefactsViewSet(viewsets.ModelViewSet):
         """Create a new artefacts."""
         serializer.save()
 
+    @extend_schema(parameters=[COMPANY_PARAMETER])
     @api_view(['GET'])
     # @authentication_classes([TokenAuthentication])
     # @permission_classes([IsAuthenticatedOrOptions])
     def get_artefacts_list(self):
         artefacts = Artefacts.objects.all()
+        company = self.request.query_params.get('company')
+        if company:
+            artefacts = artefacts.filter(company=company)
         serializer = serializers.ArtefactsSerializer(artefacts, many=True)
 
         return Response({
@@ -46,8 +58,6 @@ class ArtefactsViewSet(viewsets.ModelViewSet):
             "artefacts": serializer.data
         })
 
-
-from drf_spectacular.utils import extend_schema
 
 @extend_schema(
     request=serializers.LinkedTaskArtefactRequestSerializer,
@@ -120,13 +130,19 @@ def get_artefact_by_name(request, name):
         return Response({'error': 'Artefact not found'}, status=404)
 
 
-@extend_schema(responses=serializers.ArtefactsSerializer(many=True))
+@extend_schema(
+    parameters=[COMPANY_PARAMETER],
+    responses=serializers.ArtefactsSerializer(many=True)
+)
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_artefacts_by_subtype(request, subtype):
     """Retrieve artefacts by their subtype."""
     artefacts = Artefacts.objects.filter(subtype=subtype)
+    company = request.query_params.get('company')
+    if company:
+        artefacts = artefacts.filter(company=company)
     serializer = serializers.ArtefactsSerializer(artefacts, many=True)
     return Response({
         "count": artefacts.count(),
@@ -134,13 +150,19 @@ def get_artefacts_by_subtype(request, subtype):
     })
 
 
-@extend_schema(responses=serializers.ArtefactsSerializer(many=True))
+@extend_schema(
+    parameters=[COMPANY_PARAMETER],
+    responses=serializers.ArtefactsSerializer(many=True)
+)
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_linked_artefacts(request, idart):
     """Retrieve artefacts linked as targets to a source artefact."""
     artefacts = Artefacts.objects.filter(target_links__source_artefact__id=idart)
+    company = request.query_params.get('company')
+    if company:
+        artefacts = artefacts.filter(company=company)
     serializer = serializers.ArtefactsSerializer(artefacts, many=True)
     return Response({
         "count": artefacts.count(),
