@@ -29,6 +29,7 @@ DEBUG = os.environ.get('DEV', 'False').lower() == 'true'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://eatool-api-production-8328.up.railway.app",
     "https://eatool-api-production.up.railway.app",
     "http://localhost:8000"
 ]
