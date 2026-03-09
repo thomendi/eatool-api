@@ -20,13 +20,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2kac6pga!foq6ny6l*8i$*7-q!gg8u_@f7k5_2#4vej%!tju33'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-cambiame')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEV', 'False').lower() == 'true'
 
 
-ALLOWED_HOSTS = ['localhost', '.localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://eatool-api-production.up.railway.app",
+    "http://localhost:8000"
+]
 
 
 
@@ -59,10 +64,11 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.environ.get('DB_HOST'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASS'),
+        'NAME': os.environ.get('DB_NAME', 'adimote3_eatools'),
+        'USER': os.environ.get('DB_USER', 'adimote3_usuariodb'),
+        'PASSWORD': os.environ.get('DB_PASS', 'tu_password_aqui'),
+        'HOST': os.environ.get('DB_HOST', 'adimotek.cl'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -104,6 +110,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -157,6 +164,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
